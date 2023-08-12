@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryCMCM", "LibraryCMCM\LibraryCMCM.csproj", "{EC71AB83-5D58-4F30-8276-9303F7B0B815}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryCMCM", "LibraryCMCM\LibraryCMCM.csproj", "{EC71AB83-5D58-4F30-8276-9303F7B0B815}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiCMCM", "ApiCMCM\ApiCMCM.csproj", "{C9B237EF-3448-4FDC-BDAD-C9A00CF7926E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{EC71AB83-5D58-4F30-8276-9303F7B0B815}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC71AB83-5D58-4F30-8276-9303F7B0B815}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC71AB83-5D58-4F30-8276-9303F7B0B815}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9B237EF-3448-4FDC-BDAD-C9A00CF7926E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9B237EF-3448-4FDC-BDAD-C9A00CF7926E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9B237EF-3448-4FDC-BDAD-C9A00CF7926E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9B237EF-3448-4FDC-BDAD-C9A00CF7926E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
