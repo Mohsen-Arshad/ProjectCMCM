@@ -19,12 +19,15 @@ public class RequestModel
 
     [MinLength(3)]
     [MaxLength(50)]
+    //[Required(ErrorMessage = "Please enter your name")]
     public string Subject { get; set; }
 
+    //[Required(ErrorMessage = "Please enter your name")]
     public string RequestDocument { get; set; }
 
     [MinLength(0)]
     [MaxLength(200)]
+    //[Required(ErrorMessage = "Please enter your name")]
     public string RequestComment { get; set; }
 
 
