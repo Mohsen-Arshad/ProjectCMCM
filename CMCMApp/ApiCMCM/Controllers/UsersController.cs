@@ -20,7 +20,16 @@ public class UsersController : ControllerBase
         _config = config;
     }
 
-    #region POST
+    #region GET
+    [HttpGet("{id}")]
+    //[ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any, NoStore = false)]   ------ this line is for caching
+    public IActionResult GetUser()
+    {
+
+    }
+    #endregion
+
+    #region POST LOGIN REGISTER
     [HttpPost]
     [AllowAnonymous]
     public IActionResult Register()
@@ -36,6 +45,18 @@ public class UsersController : ControllerBase
     }
     #endregion
 
+
+    #region POST
+    #endregion
+
+
+    #region PUT
+    #endregion
+
+
+
+    #region DELETE
+    #endregion
 
     private string GenerateToken(UserModel user)
     {
