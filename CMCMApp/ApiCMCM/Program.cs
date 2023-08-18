@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using LibraryCMCM.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,8 @@ builder.Services.AddAuthorization(opts =>
 {
     opts.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
 });
+
+builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
 
 var app = builder.Build();
 
