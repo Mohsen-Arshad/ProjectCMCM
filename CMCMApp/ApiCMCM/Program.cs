@@ -1,40 +1,12 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using LibraryCMCM.DataAccess;
+using ApiCMCM.StartupConfig;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddResponseCaching();
-builder.Services.AddAuthentication("Bearer").AddJwtBearer(opts =>
-{
-    opts.TokenValidationParameters = new()
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateIssuerSigningKey = true,
-        ValidateLifetime = true,
-        ValidIssuer = builder.Configuration.GetValue<string>("Authentication:Issuer"),
-        ValidAudience = builder.Configuration.GetValue<string>("Authentication:Audience"),
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.ASCII.GetBytes(
-                builder.Configuration.GetValue<string>("Audience:SecretKey"))),
-        ClockSkew = TimeSpan.Zero
-    };
-});
-
-builder.Services.AddAuthorization(opts =>
-{
-    opts.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-});
-
-builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
+builder.AddStandardServices();
+builder.AddSwaggerServices();
+builder.AddAuthenticationServices();
+builder.AddCachingServices();
+builder.AddCustomServices();
 
 var app = builder.Build();
 
@@ -54,5 +26,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health").AllowAnonymous();
 
 app.Run();
