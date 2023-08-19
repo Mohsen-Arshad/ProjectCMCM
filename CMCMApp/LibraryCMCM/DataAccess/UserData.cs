@@ -13,7 +13,7 @@ public class UserData : IUserData
     }
 
     //dbo.spGetUser -- Login
-    public async Task<UserModel> GetUser(string emailAddress, string password)
+    public async Task<UserModel?> GetUser(string emailAddress, string password)
     {
         var result = await _sql.LoadData<UserModel, dynamic>(
             "dbo.spGetUser",
