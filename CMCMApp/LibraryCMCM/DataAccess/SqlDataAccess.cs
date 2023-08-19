@@ -16,7 +16,7 @@ public class SqlDataAccess : ISqlDataAccess
 
     public async Task<List<T>> LoadData<T, U>(string storedProcedure, U parameters, string connectionStringName)
     {
-        string connectionString = _config.GetConnectionString(connectionStringName);
+        string connectionString = _config.GetConnectionString(connectionStringName)!;
         using IDbConnection connection = new SqlConnection(connectionString);
         var rows = await connection.QueryAsync<T>(
             storedProcedure,
@@ -28,7 +28,10 @@ public class SqlDataAccess : ISqlDataAccess
 
     public Task SaveData<T>(string storedProcedure, T parameters, string connectionStringName)
     {
-        using IDbConnection connection = new SqlConnection(connectionStringName);
+        string connectionString = _config.GetConnectionString(connectionStringName)!;
+
+        using IDbConnection connection = new SqlConnection(connectionString);
+
         return connection.ExecuteAsync(
             storedProcedure,
             parameters,
