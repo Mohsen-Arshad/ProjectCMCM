@@ -1,7 +1,6 @@
 ﻿using LibraryCMCM.DataAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
-using 
 using System.Text;
 
 namespace ApiCMCM.StartupConfig;
@@ -27,6 +26,7 @@ public static class DependencyInjectionExtensions
         builder.Services.AddSingleton<IUserData, UserData>();
         builder.Services.AddSingleton<IRequestData, RequestData>();
         builder.Services.AddSingleton<ICategoryData, CategoryData>();
+        builder.Services.AddSingleton<IFileService, FileService>();
     }
 
     public static void AddAuthenticationServices(this WebApplicationBuilder builder)
