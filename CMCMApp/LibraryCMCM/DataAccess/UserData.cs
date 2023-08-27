@@ -20,7 +20,7 @@ public class UserData : IUserData
             new { EmailAddress = emailAddress, Password = password },
             "Default");
 
-        return result.FirstOrDefault()!;
+        return result.FirstOrDefault();
     }
 
 
