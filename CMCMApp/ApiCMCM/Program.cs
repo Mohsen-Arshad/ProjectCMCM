@@ -27,6 +27,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHealthChecks("/health").AllowAnonymous();
+//app.MapHealthChecks("/health").AllowAnonymous();
 
 app.Run();
