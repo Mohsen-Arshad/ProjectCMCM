@@ -11,13 +11,13 @@ public static class DependencyInjectionExtensions
     {
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
         builder.AddSwaggerServices();
     }
 
     public static void AddSwaggerServices(this WebApplicationBuilder builder)
     {
 
-        builder.Services.AddSwaggerGen();
     }
 
     public static void AddCustomServices(this WebApplicationBuilder builder)
@@ -31,6 +31,11 @@ public static class DependencyInjectionExtensions
 
     public static void AddAuthenticationServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddAuthorization(opts =>
+        {
+            opts.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+        });
+
         builder.Services.AddAuthentication("Bearer").AddJwtBearer(opts =>
         {
             opts.TokenValidationParameters = new()
@@ -43,14 +48,9 @@ public static class DependencyInjectionExtensions
                 ValidAudience = builder.Configuration.GetValue<string>("Authentication:Audience"),
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.ASCII.GetBytes(
-                        builder.Configuration.GetValue<string>("Audience:SecretKey")!)),
+                        builder.Configuration.GetValue<string>("Authentication:SecretKey")!)),
                 ClockSkew = TimeSpan.Zero
             };
-        });
-
-        builder.Services.AddAuthorization(opts =>
-        {
-            opts.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
         });
     }
 
