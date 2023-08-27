@@ -6,7 +6,7 @@ namespace LibraryCMCM.DataAccess
     {
         Task DeleteUser(int id);
         Task<UserModel> GetUser(string emailAddress, string password);
-        Task PostUser(string firstName, string lastName, int identificationNumber, string emailAddress, string password);
-        Task UpdateUser(int id, string firstName, string lastName, int identificationNumber, string emailAddress);
+        Task<UserModel> PostUser(string firstName, string lastName, string identificationNumber, string emailAddress, string password);
+        Task UpdateUser(int id, string firstName, string lastName, string identificationNumber, string emailAddress);
     }
 }
