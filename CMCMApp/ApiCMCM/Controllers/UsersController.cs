@@ -1,4 +1,5 @@
-﻿using LibraryCMCM.Models;
+﻿using LibraryCMCM.DataAccess;
+using LibraryCMCM.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +15,12 @@ namespace ApiCMCM.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IConfiguration _config;
+    private readonly IUserData _userData;
 
-    public UsersController(IConfiguration config)
+    public UsersController(IConfiguration config, IUserData userData)
     {
         _config = config;
+        _userData = userData;
     }
 
     #region GET
@@ -25,23 +28,37 @@ public class UsersController : ControllerBase
     //[ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any, NoStore = false)]   ------ this line is for caching
     public IActionResult GetUser()
     {
-
+        return Ok();
     }
     #endregion
 
     #region POST LOGIN REGISTER
-    [HttpPost]
+    [HttpPost("[action]")]
     [AllowAnonymous]
-    public IActionResult Register()
+    public IActionResult Register([FromBody] UserModel user)
     {
 
+        return Ok();
     }
 
-    [HttpPost]
+    [HttpPost("[action]")]
     [AllowAnonymous]
-    public IActionResult Login()
+    public async Task<IActionResult> Login([FromBody] UserModel user)
     {
-
+        try
+        {
+            var currentUser = await _userData.GetUser(user.EmailAddress, user.Password);
+            if (currentUser is null)
+            {
+                return NotFound("User not found! Email or Password is not correct");
+            }
+            var token = GenerateToken(currentUser);
+            return Ok(token);
+        }
+        catch (Exception)
+        {
+            return BadRequest();
+        }
     }
     #endregion
 
@@ -64,7 +81,7 @@ public class UsersController : ControllerBase
         var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
         List<Claim> claims = new();
-        claims.Add(new(JwtRegisteredClaimNames.Sub, user.Id.ToString()));
+        claims.Add(new(JwtRegisteredClaimNames.Sub, user.id.ToString()));
         claims.Add(new(JwtRegisteredClaimNames.Email, user.EmailAddress));
 
         var token = new JwtSecurityToken(
