@@ -35,10 +35,18 @@ public class UsersController : ControllerBase
     #region POST LOGIN REGISTER
     [HttpPost("[action]")]
     [AllowAnonymous]
-    public IActionResult Register([FromBody] UserModel user)
+    public async Task<IActionResult> Register([FromBody] UserModel user)
     {
+        try
+        {
+            var result = await _userData.PostUser(user.FirstName, user.LastName, user.IdentificationNumber, user.EmailAddress, user.Password);
+            return Ok("User Created!");
+        }
+        catch (Exception)
+        {
+            return BadRequest("Please fill all the fields!");
+        }
 
-        return Ok();
     }
 
     [HttpPost("[action]")]
@@ -62,15 +70,8 @@ public class UsersController : ControllerBase
     }
     #endregion
 
-
-    #region POST
-    #endregion
-
-
     #region PUT
     #endregion
-
-
 
     #region DELETE
     #endregion
@@ -94,5 +95,4 @@ public class UsersController : ControllerBase
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
 }
