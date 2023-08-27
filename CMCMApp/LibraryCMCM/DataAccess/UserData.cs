@@ -25,14 +25,14 @@ public class UserData : IUserData
 
 
     //dbo.spPostUser -- Register
-    public Task PostUser(
+    public async Task<UserModel> PostUser(
         string firstName,
         string lastName,
-        int identificationNumber,
+        string identificationNumber,
         string emailAddress,
         string password)
     {
-        return _sql.SaveData(
+        var result = await _sql.LoadData<UserModel ,dynamic>(
             "dbo.spPostUser",
             new
             {
@@ -43,6 +43,8 @@ public class UserData : IUserData
                 Password = password
             },
             "Default");
+
+        return result.FirstOrDefault();
     }
 
     //dbo.spUpdateUser
@@ -50,7 +52,7 @@ public class UserData : IUserData
         int id,
         string firstName,
         string lastName,
-        int identificationNumber,
+        string identificationNumber,
         string emailAddress)
     {
         return _sql.SaveData(
