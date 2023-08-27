@@ -19,7 +19,7 @@ public class UserModel
     public string? LastName { get; set; }
 
     //[Required(ErrorMessage = "Please enter your Identification Number")]
-    public int? IdentificationNumber { get; set; }
+    public string? IdentificationNumber { get; set; }
 
     [EmailAddress]
     //[Required(ErrorMessage = "Please enter your EmailAddress")]
