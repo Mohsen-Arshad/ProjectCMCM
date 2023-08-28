@@ -23,14 +23,14 @@ public class UsersController : ControllerBase
         _userData = userData;
     }
 
-    #region GET
-    [HttpGet("{id}")]
-    //[ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any, NoStore = false)]   ------ this line is for caching
-    public IActionResult GetUser()
-    {
-        return Ok();
-    }
-    #endregion
+    //#region GET
+    //[HttpGet("{id}")]
+    ////[ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any, NoStore = false)]   ------ this line is for caching
+    //public IActionResult GetUser()
+    //{
+    //    return Ok();
+    //}
+    //#endregion
 
     #region POST LOGIN REGISTER
     [HttpPost("[action]")]
@@ -71,9 +71,49 @@ public class UsersController : ControllerBase
     #endregion
 
     #region PUT
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UserModel user)
+    {
+        try
+        {
+            var userEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var userId = User.Claims.FirstOrDefault(c=> c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (userEmail == user.EmailAddress)
+            {
+                await _userData.UpdateUser(int.Parse(userId), user.FirstName, user.LastName, user.IdentificationNumber, user.EmailAddress);
+                return Ok("Updated Successfully");
+            }
+            return NotFound("User not found");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex);
+        }
+    }
     #endregion
 
     #region DELETE
+    [HttpDelete]
+    [AllowAnonymous]
+    public async Task<IActionResult> Delete()
+    {
+        var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+        try
+        {
+            if (userId != null)
+            {
+                await _userData.DeleteUser(int.Parse(userId));
+                return Ok("User successfully deleted!");
+            }
+            return NotFound("User not found");
+        }
+        catch (Exception)
+        {
+            return BadRequest();
+        }
+    }
     #endregion
 
     private string GenerateToken(UserModel user)
