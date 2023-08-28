@@ -71,6 +71,6 @@ public class UserData : IUserData
     //dbo.spDeleteUser
     public Task DeleteUser(int id)
     {
-        return _sql.SaveData<dynamic>("dbo.spDeleteUser", new { Id = id }, "Default");
+        return _sql.SaveData("dbo.spDeleteUser", new { Id = id }, "Default");
     }
 }

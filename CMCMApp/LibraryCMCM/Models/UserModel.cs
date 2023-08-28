@@ -6,7 +6,7 @@ namespace LibraryCMCM.Models;
 
 public class UserModel
 {
-    public int? id { get; set; }
+    public int id { get; set; }
 
     [MinLength(3)]
     [MaxLength(30)]
