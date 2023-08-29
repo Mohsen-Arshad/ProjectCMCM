@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace LibraryCMCM.Models;
 
 public class RequestModel
@@ -35,4 +38,7 @@ public class RequestModel
     public int StatusCode { get; set; }
     public bool IsComplete { get; set; }
     public bool IsArchived { get; set; }
+
+    [NotMapped]
+    public IFormFile ImageDoc { get; set; }
 }
