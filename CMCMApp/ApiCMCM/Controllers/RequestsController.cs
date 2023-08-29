@@ -42,5 +42,35 @@ namespace ApiCMCM.Controllers
         }
         #endregion
 
+        #region POST
+        [HttpPost]
+        public async Task<IActionResult> CreateRequest([FromBody] RequestModel model)
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var result = _requestData.PostRequest(int.Parse(userId), model.CategoryId, model.Subject, model.RequestDocument, model.RequestComment);
+
+            return Ok(result);
+        }
+        #endregion
+
+        #region PUT
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRequest(int id, [FromBody] RequestModel model)
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var result = _requestData.UpdateRequest(id, model.CategoryId, model.Subject, model.RequestDocument, model.RequestComment);
+
+            return Ok("Your request updated");
+        }
+        #endregion
+
+        #region DELETE
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRequest(int id)
+        {
+            var result = _requestData.DeleteRequest(id);
+            return Ok("Your request deleted");
+        }
+        #endregion
     }
 }
