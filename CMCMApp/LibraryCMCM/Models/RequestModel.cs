@@ -16,6 +16,7 @@ public class RequestModel
     public int Id { get; set; }
     public int UserId { get; set; }
     public int CategoryId { get; set; }
+    public int DocumentId { get; set; }
 
     [MinLength(3)]
     [MaxLength(50)]
