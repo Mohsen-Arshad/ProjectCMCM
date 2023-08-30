@@ -44,8 +44,19 @@ public class RequestsController : ControllerBase
 
     #region POST
     [HttpPost]
-    public async Task<IActionResult> CreateRequest([FromBody] RequestModel model)
+    public async Task<IActionResult> CreateRequest([FromForm] RequestModel model)
     {
+        // Global unique ID = GUID ##### we use this guid, for naming our files that we want to have unique name
+        // Everytime this method calls a new GUID creates and we can use this name for our file naming convesions.
+        var guid = Guid.NewGuid();
+        var filePath = Path.Combine("BlobAddress", guid+".jpg");
+
+        if (model.DocFile != null)
+        {
+            var fileStream = new FileStream(filePath, FileMode.Create);
+            model.DocFile.CopyTo(fileStream);
+        }
+
         var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         var result = _requestData.PostRequest(int.Parse(userId), model.CategoryId, model.Subject, model.RequestDocument, model.RequestComment);
 
@@ -55,7 +66,7 @@ public class RequestsController : ControllerBase
 
     #region PUT
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateRequest(int id, [FromBody] RequestModel model)
+    public async Task<IActionResult> UpdateRequest(int id, [FromForm] RequestModel model)
     {
         var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         var result = _requestData.UpdateRequest(id, model.CategoryId, model.Subject, model.RequestDocument, model.RequestComment);
