@@ -51,6 +51,7 @@ public class RequestsController : ControllerBase
         var guid = Guid.NewGuid();
         var filePath = Path.Combine("BlobAddress", guid+".jpg");
 
+        // Instead of this if condition we have to replace it with our blob storage saving method ******* NOTICE NOTICE
         if (model.DocFile != null)
         {
             var fileStream = new FileStream(filePath, FileMode.Create);
