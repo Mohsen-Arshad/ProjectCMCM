@@ -21,17 +21,18 @@ public class RequestModel
     public int CategoryId { get; set; }
     public int DocumentId { get; set; }
 
+
+    //[Required(ErrorMessage = "Please enter your name")]
     [MinLength(3)]
     [MaxLength(50)]
-    //[Required(ErrorMessage = "Please enter your name")]
     public string Subject { get; set; }
 
     //[Required(ErrorMessage = "Please enter your name")]
     public string RequestDocument { get; set; }
 
+    //[Required(ErrorMessage = "Please enter your name")]
     [MinLength(0)]
     [MaxLength(200)]
-    //[Required(ErrorMessage = "Please enter your name")]
     public string RequestComment { get; set; }
 
 
@@ -40,5 +41,5 @@ public class RequestModel
     public bool IsArchived { get; set; }
 
     [NotMapped]
-    public IFormFile ImageDoc { get; set; }
+    public IFormFile DocFile { get; set; }
 }
