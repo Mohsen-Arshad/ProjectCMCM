@@ -45,15 +45,16 @@ public class FileService : IFileService
 
     public async Task<BlobResponseDto> UploadAsync(IFormFile blob)
     {
+        var guid = Guid.NewGuid();
         BlobResponseDto response = new();
-        BlobClient client = _filesContainer.GetBlobClient(blob.FileName);
+        BlobClient client = _filesContainer.GetBlobClient(guid.ToString());
 
         await using (Stream? data = blob.OpenReadStream())
         {
             await client.UploadAsync(data);
         }
 
-        response.Status = $"File {blob.FileName} Uploaded Successfully";
+        response.Status = guid.ToString();
         response.Error = false;
         response.Blob.Uri = client.Uri.AbsoluteUri;
         response.Blob.Name = client.Name;
