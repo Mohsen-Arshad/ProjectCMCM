@@ -11,10 +11,12 @@ namespace ApiCMCM.Controllers;
 public class RequestsController : ControllerBase
 {
     private readonly IRequestData _requestData;
+    private readonly IFileService _fileService;
 
-    public RequestsController(IRequestData requestData)
+    public RequestsController(IRequestData requestData, IFileService fileService)
     {
         _requestData = requestData;
+        _fileService = fileService;
     }
 
     #region GET
@@ -46,6 +48,7 @@ public class RequestsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateRequest([FromForm] RequestModel model)
     {
+        BlobResponseDto uploadResult;
         // Global unique ID = GUID ##### we use this guid, for naming our files that we want to have unique name
         // Everytime this method calls a new GUID creates and we can use this name for our file naming convesions.
         var guid = Guid.NewGuid();
@@ -54,8 +57,11 @@ public class RequestsController : ControllerBase
         // Instead of this if condition we have to replace it with our blob storage saving method ******* NOTICE NOTICE
         if (model.DocFile != null)
         {
-            var fileStream = new FileStream(filePath, FileMode.Create);
-            model.DocFile.CopyTo(fileStream);
+            uploadResult = await _fileService.UploadAsync(model.DocFile);
+        }
+        else
+        {
+            return BadRequest("Please upload your file");
         }
 
         var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
