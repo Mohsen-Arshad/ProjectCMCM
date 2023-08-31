@@ -51,8 +51,7 @@ public class RequestsController : ControllerBase
     public async Task<IActionResult> CreateRequest([FromForm] RequestModel model)
     {
         BlobResponseDto uploadResult;
-        // Global unique ID = GUID ##### we use this guid, for naming our files that we want to have unique name
-        // Everytime this method calls a new GUID creates and we can use this name for our file naming convesions.
+
         var guid = Guid.NewGuid();
         var filePath = Path.Combine("BlobAddress", guid+".jpg");
 
