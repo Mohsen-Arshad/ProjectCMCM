@@ -12,11 +12,13 @@ public class RequestsController : ControllerBase
 {
     private readonly IRequestData _requestData;
     private readonly IFileService _fileService;
+    private readonly IDocumentData _documentData;
 
-    public RequestsController(IRequestData requestData, IFileService fileService)
+    public RequestsController(IRequestData requestData, IFileService fileService, IDocumentData documentData)
     {
         _requestData = requestData;
         _fileService = fileService;
+        _documentData = documentData;
     }
 
     #region GET
@@ -65,9 +67,11 @@ public class RequestsController : ControllerBase
         }
 
         var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        var result = _requestData.PostRequest(int.Parse(userId), model.CategoryId, model.Subject, model.RequestDocument, model.RequestComment);
+        var documentTableResult = await _documentData.PostDocument(int.Parse(userId), uploadResult.Status, uploadResult.Blob.Uri);
+        var requestResult = await _requestData.PostRequest(int.Parse(userId), model.CategoryId, documentTableResult.id, model.Subject, model.RequestDocument, model.RequestComment);
 
-        return Ok(result);
+
+        return Ok(requestResult);
     }
     #endregion
 
