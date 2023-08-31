@@ -33,30 +33,35 @@ public class RequestData : IRequestData
     }
 
     // dbo.spPostRequest
-    public Task PostRequest(
+    public async Task<RequestModel?> PostRequest(
         int userId,
         int categoryId,
+        int documentId,
         string subject,
         string requestDocument,
         string comment)
     {
-        return _sql.SaveData(
+        var result = await _sql.LoadData<RequestModel, dynamic>(
             "dbo.spPostRequest",
             new
             {
                 UserId = userId,
                 CategoryId = categoryId,
+                DocumentId = documentId,
                 Subject = subject,
                 RequestDocument = requestDocument,
                 Comment = comment
             },
             "Default");
+
+        return result.FirstOrDefault();
     }
 
     // dbo.spUpdateRequest
     public Task UpdateRequest(
         int requestId,
         int categoryId,
+        int documentId,
         string subject,
         string requestDocument,
         string comment)
@@ -67,6 +72,7 @@ public class RequestData : IRequestData
             {
                 Id = requestId,
                 CategoryId = categoryId,
+                DocumentId = documentId,
                 Subject = subject,
                 RequestDocument = requestDocument,
                 Comment = comment
