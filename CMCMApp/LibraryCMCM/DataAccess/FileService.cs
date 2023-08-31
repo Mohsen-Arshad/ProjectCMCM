@@ -45,6 +45,8 @@ public class FileService : IFileService
 
     public async Task<BlobResponseDto> UploadAsync(IFormFile blob)
     {
+        // Global unique ID = GUID ##### we use this guid, for naming our files that we want to have unique name
+        // Everytime this method calls a new GUID creates and we can use this name for our file naming convesions.
         var guid = Guid.NewGuid();
         BlobResponseDto response = new();
         BlobClient client = _filesContainer.GetBlobClient(guid.ToString());
