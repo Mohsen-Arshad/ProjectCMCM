@@ -70,7 +70,6 @@ public class RequestsController : ControllerBase
         var documentTableResult = await _documentData.PostDocument(int.Parse(userId), uploadResult.Status, uploadResult.Blob.Uri);
         var requestResult = await _requestData.PostRequest(int.Parse(userId), model.CategoryId, documentTableResult.id, model.Subject, model.RequestDocument, model.RequestComment);
 
-
         return Ok(requestResult);
     }
     #endregion
