@@ -26,6 +26,7 @@ public static class DependencyInjectionExtensions
         builder.Services.AddSingleton<IRequestData, RequestData>();
         builder.Services.AddSingleton<ICategoryData, CategoryData>();
         builder.Services.AddSingleton<IFileService, FileService>();
+        builder.Services.AddSingleton<IDocumentData, DocumentData>();
     }
 
     public static void AddAuthenticationServices(this WebApplicationBuilder builder)
