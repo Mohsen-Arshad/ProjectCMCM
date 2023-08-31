@@ -7,7 +7,7 @@ namespace LibraryCMCM.DataAccess
         Task DeleteRequest(int requestId);
         Task<List<RequestModel>> GetAllRequests(int userId);
         Task<RequestModel?> GetRequest(int requestId);
-        Task PostRequest(int userId, int categoryId, string subject, string requestDocument, string comment);
-        Task UpdateRequest(int requestId, int categoryId, string subject, string requestDocument, string comment);
+        Task<RequestModel?> PostRequest(int userId, int categoryId, int documentId, string subject, string requestDocument, string comment);
+        Task UpdateRequest(int requestId, int categoryId, int documentId, string subject, string requestDocument, string comment);
     }
 }
