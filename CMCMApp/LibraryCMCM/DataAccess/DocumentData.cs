@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LibraryCMCM.DataAccess;
 
-public class DocumentData
+public class DocumentData : IDocumentData
 {
     private readonly ISqlDataAccess _sql;
 
@@ -39,27 +39,28 @@ public class DocumentData
     }
 
     // dbo.spPostDocument
-    public async Task<DocumentModel> PostDocument(int requestId, int userId, string fileName, string filePathUrl)
+    public async Task<DocumentModel> PostDocument(int userId, string fileName, string filePathUrl)
     {
         var result = await _sql.LoadData<DocumentModel, dynamic>(
             "dbo.spPostDocument",
-            new { RequestId = requestId,
-                  UserId = userId,
-                  FileName = fileName,
-                  FilePathUrl = filePathUrl},
+            new
+            {
+                UserId = userId,
+                FileName = fileName,
+                FilePathUrl = filePathUrl
+            },
             "Default");
         return result.FirstOrDefault();
     }
 
     // dbo.spUpdateDocument
-    public Task UpdateDocument(int documentId, int requestId, int userId, string fileName, string filePathUrl)
+    public Task UpdateDocument(int documentId, int userId, string fileName, string filePathUrl)
     {
         return _sql.SaveData(
             "dbo.spUpdateDocument",
             new
             {
                 Id = documentId,
-                RequestId = requestId,
                 UserId = userId,
                 FileName = fileName,
                 FilePathUrl = filePathUrl
