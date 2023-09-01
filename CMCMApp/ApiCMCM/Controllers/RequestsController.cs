@@ -1,4 +1,5 @@
-﻿using LibraryCMCM.DataAccess;
+﻿using Azure;
+using LibraryCMCM.DataAccess;
 using LibraryCMCM.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -52,9 +53,6 @@ public class RequestsController : ControllerBase
     {
         BlobResponseDto uploadResult;
 
-        var guid = Guid.NewGuid();
-        var filePath = Path.Combine("BlobAddress", guid+".jpg");
-
         // Instead of this if condition we have to replace it with our blob storage saving method ******* NOTICE NOTICE
         if (model.DocFile != null)
         {
@@ -69,7 +67,9 @@ public class RequestsController : ControllerBase
         var documentTableResult = await _documentData.PostDocument(int.Parse(userId), uploadResult.Status, uploadResult.Blob.Uri);
         var requestResult = await _requestData.PostRequest(int.Parse(userId), model.CategoryId, documentTableResult.id, model.Subject, model.RequestDocument, model.RequestComment);
 
-        return Ok(requestResult);
+        var response = PostResponse(requestResult , documentTableResult);
+
+        return Ok(response);
     }
     #endregion
 
@@ -92,4 +92,23 @@ public class RequestsController : ControllerBase
         return Ok("Your request deleted");
     }
     #endregion
+
+    private RequestResponse PostResponse(RequestModel rModel, DocumentModel dModel)
+    {
+        RequestResponse response = new RequestResponse();
+
+        response.Id = rModel.Id;
+        response.UserId = rModel.UserId;
+        response.CategoryId = rModel.CategoryId;
+        response.DocumentId = rModel.DocumentId;
+        response.FileName = dModel.FileName;
+        response.Subject = rModel.Subject;
+        response.RequestComment = rModel.RequestComment;
+        response.StatusCode = (int)rModel.StatusCode;
+        response.IsComplete = rModel.IsComplete;
+        response.IsArchived = rModel.IsArchived;
+        response.DocumentUrl = dModel.FilePathUrl;
+
+        return response;
+    }
 }
