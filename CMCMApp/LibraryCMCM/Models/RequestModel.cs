@@ -28,9 +28,6 @@ public class RequestModel
     public string Subject { get; set; }
 
     //[Required(ErrorMessage = "Please enter your name")]
-    public string RequestDocument { get; set; }
-
-    //[Required(ErrorMessage = "Please enter your name")]
     [MinLength(0)]
     [MaxLength(200)]
     public string RequestComment { get; set; }
