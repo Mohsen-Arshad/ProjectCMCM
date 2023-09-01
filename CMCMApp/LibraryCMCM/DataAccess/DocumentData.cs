@@ -54,9 +54,9 @@ public class DocumentData : IDocumentData
     }
 
     // dbo.spUpdateDocument
-    public Task UpdateDocument(int documentId, int userId, string fileName, string filePathUrl)
+    public async Task<DocumentModel> UpdateDocument(int documentId, int userId, string fileName, string filePathUrl)
     {
-        return _sql.SaveData(
+        var result = await _sql.LoadData<DocumentModel,dynamic>(
             "dbo.spUpdateDocument",
             new
             {
@@ -66,5 +66,7 @@ public class DocumentData : IDocumentData
                 FilePathUrl = filePathUrl
             },
             "Default");
+
+        return result.FirstOrDefault();
     }
 }
