@@ -65,7 +65,7 @@ public class RequestsController : ControllerBase
 
         var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         var documentTableResult = await _documentData.PostDocument(int.Parse(userId), uploadResult.Status, uploadResult.Blob.Uri);
-        var requestResult = await _requestData.PostRequest(int.Parse(userId), model.CategoryId, documentTableResult.id, model.Subject, model.RequestDocument, model.RequestComment);
+        var requestResult = await _requestData.PostRequest(int.Parse(userId), model.CategoryId, documentTableResult.id, model.Subject, model.RequestComment);
 
         var response = PostResponse(requestResult , documentTableResult);
 
@@ -77,8 +77,27 @@ public class RequestsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateRequest(int id, [FromForm] RequestModel model)
     {
+        BlobResponseDto uploadResult = new();
+        RequestModel reqModel = new();
+        DocumentModel docModel = new();
+
+        // Instead of this if condition we have to replace it with our blob storage saving method ******* NOTICE NOTICE
+        if (model.DocFile is not null)
+        {
+            reqModel = await _requestData.GetRequest(id);
+            docModel = await _documentData.GetDocument(reqModel.DocumentId);
+            var blobDel = await _fileService.DeleteAsync(docModel.FileName);
+
+            uploadResult = await _fileService.UploadAsync(model.DocFile);
+        }
+        else
+        {
+            return BadRequest("Please upload your file");
+        }
+
         var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        var result = _requestData.UpdateRequest(id, model.CategoryId, model.Subject, model.RequestDocument, model.RequestComment);
+        var documentTableResult = await _documentData.UpdateDocument(docModel.id, reqModel.UserId, uploadResult.Status, uploadResult.Blob.Uri);
+        var result = _requestData.UpdateRequest(id, model.CategoryId, documentTableResult.id, model.Subject, model.RequestComment);
 
         return Ok("Your request updated");
     }
