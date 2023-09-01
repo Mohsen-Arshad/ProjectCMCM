@@ -38,7 +38,6 @@ public class RequestData : IRequestData
         int categoryId,
         int documentId,
         string subject,
-        string requestDocument,
         string comment)
     {
         var result = await _sql.LoadData<RequestModel, dynamic>(
@@ -49,7 +48,6 @@ public class RequestData : IRequestData
                 CategoryId = categoryId,
                 DocumentId = documentId,
                 Subject = subject,
-                RequestDocument = requestDocument,
                 Comment = comment
             },
             "Default");
@@ -63,7 +61,6 @@ public class RequestData : IRequestData
         int categoryId,
         int documentId,
         string subject,
-        string requestDocument,
         string comment)
     {
         return _sql.SaveData(
@@ -74,7 +71,6 @@ public class RequestData : IRequestData
                 CategoryId = categoryId,
                 DocumentId = documentId,
                 Subject = subject,
-                RequestDocument = requestDocument,
                 Comment = comment
             },
             "Default");
