@@ -4,6 +4,7 @@ using LibraryCMCM.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
+using System.Reflection.Metadata;
 
 namespace LibraryCMCM.DataAccess;
 
@@ -16,8 +17,11 @@ public class FileService : IFileService
     {
         _config = config;
 
-        var credential = new StorageSharedKeyCredential(_config.GetSection("FileService:StorageAccount").ToString(), _config.GetSection("FileService:Key").ToString());
-        var blobUri = $"https://{_config.GetSection("FileService:StorageAccount")}.blob.core.windows.net";
+        //string storageAccount = "cmcmstorage";
+        //string storageKey = "+lPSqADC3CgECy59+MXtZUvZr+6wha6nbOnfftQ7w+wKbdWJfP+MG5Mb9oOSseRxpymGMg5EN9F3+AStTt1lBg==";
+
+        var credential = new StorageSharedKeyCredential(_config.GetValue<string>("FileService:StorageAccount"), _config.GetValue<string>("FileService:Key"));
+        var blobUri = $"https://{_config.GetValue<string>("FileService:StorageAccount")}.blob.core.windows.net/invoicesfiles/";
         var blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
         _filesContainer = blobServiceClient.GetBlobContainerClient("files");
     }
@@ -48,18 +52,21 @@ public class FileService : IFileService
         // Global unique ID = GUID ##### we use this guid, for naming our files that we want to have unique name
         // Everytime this method calls a new GUID creates and we can use this name for our file naming convesions.
         var guid = Guid.NewGuid();
+        string documentType = DocumentType(blob.ContentType.ToString());
+
         BlobResponseDto response = new();
-        BlobClient client = _filesContainer.GetBlobClient(guid.ToString());
+        BlobClient client = _filesContainer.GetBlobClient(guid.ToString() + documentType);
 
         await using (Stream? data = blob.OpenReadStream())
         {
             await client.UploadAsync(data);
         }
 
-        response.Status = guid.ToString();
+        response.Status = guid.ToString() + documentType;
         response.Error = false;
         response.Blob.Uri = client.Uri.AbsoluteUri;
         response.Blob.Name = client.Name;
+        response.Blob.ContentType = blob.ContentType;
 
         return response;
     }
@@ -88,10 +95,25 @@ public class FileService : IFileService
 
     public async Task<BlobResponseDto> DeleteAsync(string blobFileName)
     {
-        BlobClient file = _filesContainer.GetBlobClient(blobFileName);
-        await file.DeleteAsync();
-        BlobResponseDto response = new BlobResponseDto { Error = false, Status = $"File: {blobFileName} has successfully deleted." };
-        return response;
+        BlobResponseDto response;
+        try
+        {
+            BlobClient file = _filesContainer.GetBlobClient(blobFileName);
+            var result = await file.DeleteAsync();
+            response = new BlobResponseDto { Error = false, Status = $"File: {blobFileName} has successfully deleted." };
+            return response;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+
+    private string DocumentType(string contentType)
+    {
+        int indexOfSlash = contentType.IndexOf('/');
+        string result = "." + contentType.Substring(indexOfSlash + 1);
+        return result;
     }
 
 }
