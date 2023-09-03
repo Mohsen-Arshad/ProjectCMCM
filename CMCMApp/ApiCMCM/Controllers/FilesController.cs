@@ -1,4 +1,5 @@
 ﻿using LibraryCMCM.DataAccess;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,7 @@ public class FilesController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> ListAllBlobs()
     {
         var result = await _fileService.ListAsync();
@@ -23,6 +25,7 @@ public class FilesController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<IActionResult> Upload(IFormFile file)
     {
         var result = await _fileService.UploadAsync(file);
@@ -31,14 +34,16 @@ public class FilesController : ControllerBase
 
     [HttpGet]
     [Route("filename")]
+    [AllowAnonymous]
     public async Task<IActionResult> Download(string filename)
     {
         var result = await _fileService.DownloadAsync(filename);
-        return File(result!.Content!, result.ContentType!, result.Name);
+        return File(result.Content, result.ContentType, result.Name);
     }
 
     [HttpDelete]
     [Route("filename")]
+    [AllowAnonymous]
     public async Task<IActionResult> Delete(string filename)
     {
         var result = await _fileService.DeleteAsync(filename);
