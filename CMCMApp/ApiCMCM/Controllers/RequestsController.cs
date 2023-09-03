@@ -1,4 +1,5 @@
-﻿using Azure;
+﻿using ApiCMCM.Constants;
+using Azure;
 using LibraryCMCM.DataAccess;
 using LibraryCMCM.Models;
 using Microsoft.AspNetCore.Http;
@@ -34,16 +35,27 @@ public class RequestsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRequest(int id)
     {
-        var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-        var result = await _requestData.GetRequest(id);
-
-        if (int.Parse(userId) == result.UserId)
+        try
         {
-            return Ok(result);
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var result = await _requestData.GetRequest(id);
+            if (result is not null)
+            {
+                if (int.Parse(userId!) == result.UserId)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest("You don't allow to access someone else's records");
+                }
+            }
+            return NotFound("Record not found!");
         }
-
-        return NotFound("Record not found or you don't have access to this record!");
+        catch (Exception ex)
+        {
+            return BadRequest(ex);
+        }
     }
     #endregion
 
@@ -64,10 +76,10 @@ public class RequestsController : ControllerBase
         }
 
         var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        var documentTableResult = await _documentData.PostDocument(int.Parse(userId), uploadResult.Status, uploadResult.Blob.Uri);
+        var documentTableResult = await _documentData.PostDocument(int.Parse(userId), uploadResult.Blob.Name, CustomConstants.Invoices + uploadResult.Blob.Name);
         var requestResult = await _requestData.PostRequest(int.Parse(userId), model.CategoryId, documentTableResult.id, model.Subject, model.RequestComment);
 
-        var response = PostResponse(requestResult , documentTableResult);
+        var response = PostResponse(requestResult, documentTableResult);
 
         return Ok(response);
     }
@@ -87,17 +99,14 @@ public class RequestsController : ControllerBase
             reqModel = await _requestData.GetRequest(id);
             docModel = await _documentData.GetDocument(reqModel.DocumentId);
             var blobDel = await _fileService.DeleteAsync(docModel.FileName);
-
             uploadResult = await _fileService.UploadAsync(model.DocFile);
-        }
-        else
-        {
-            return BadRequest("Please upload your file");
+
+
+            docModel = await _documentData.UpdateDocument(docModel.id, reqModel.UserId, uploadResult.Blob.Name, CustomConstants.Invoices + uploadResult.Blob.Name);
         }
 
         var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        var documentTableResult = await _documentData.UpdateDocument(docModel.id, reqModel.UserId, uploadResult.Status, uploadResult.Blob.Uri);
-        var result = _requestData.UpdateRequest(id, model.CategoryId, documentTableResult.id, model.Subject, model.RequestComment);
+        var result = _requestData.UpdateRequest(id, model.CategoryId, docModel.id, model.Subject, model.RequestComment);
 
         return Ok("Your request updated");
     }
@@ -115,6 +124,7 @@ public class RequestsController : ControllerBase
     private RequestResponse PostResponse(RequestModel rModel, DocumentModel dModel)
     {
         RequestResponse response = new RequestResponse();
+        string fileCorePath = "https://cmcmstorage.blob.core.windows.net/";
 
         response.Id = rModel.Id;
         response.UserId = rModel.UserId;
@@ -126,7 +136,7 @@ public class RequestsController : ControllerBase
         response.StatusCode = (int)rModel.StatusCode;
         response.IsComplete = rModel.IsComplete;
         response.IsArchived = rModel.IsArchived;
-        response.DocumentUrl = dModel.FilePathUrl;
+        response.DocumentUrl = fileCorePath + dModel.FilePathUrl;
 
         return response;
     }
