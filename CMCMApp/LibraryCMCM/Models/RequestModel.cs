@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using LibraryCMCM.CustomValidationAttribute;
 
 namespace LibraryCMCM.Models;
 
@@ -38,5 +39,6 @@ public class RequestModel
     public bool IsArchived { get; set; }
 
     [NotMapped]
+    [AllowedExtensions(new string[] { ".pdf", ".jpg", ".jpeg", ".png" })]
     public IFormFile DocFile { get; set; }
 }
