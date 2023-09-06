@@ -40,7 +40,7 @@ public class UsersController : ControllerBase
         try
         {
             var result = await _userData.PostUser(user.FirstName, user.LastName, user.IdentificationNumber, user.EmailAddress, user.Password);
-            return Ok("User Created!");
+            return StatusCode(StatusCodes.Status201Created,result);
         }
         catch (Exception)
         {

@@ -33,9 +33,9 @@ public class FilesController : ControllerBase
     }
 
     [HttpGet]
-    [Route("filename")]
+    [Route("DownloadFile")]
     [AllowAnonymous]
-    public async Task<IActionResult> Download(string filename)
+    public async Task<IActionResult> Download([FromBody] string filename)
     {
         var result = await _fileService.DownloadAsync(filename);
         return File(result.Content, result.ContentType, result.Name);

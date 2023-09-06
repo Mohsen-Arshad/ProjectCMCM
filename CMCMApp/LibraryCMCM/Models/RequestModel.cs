@@ -41,4 +41,6 @@ public class RequestModel
     [NotMapped]
     [AllowedExtensions(new string[] { ".pdf", ".jpg", ".jpeg", ".png" })]
     public IFormFile DocFile { get; set; }
+
+    public DocumentModel? DocModel { get; set; }
 }

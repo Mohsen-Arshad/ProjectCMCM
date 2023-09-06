@@ -2,6 +2,7 @@
 using Azure;
 using LibraryCMCM.DataAccess;
 using LibraryCMCM.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -29,19 +30,36 @@ public class RequestsController : ControllerBase
     {
         var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         var result = await _requestData.GetAllRequests(int.Parse(userId));
+
+        foreach (var eachRequest in result)
+        {
+            var docId = eachRequest.DocumentId;
+            var returnedDoc = await _documentData.GetDocument(docId);
+            if (returnedDoc != null)
+            {
+                eachRequest.DocModel = returnedDoc;
+                //eachRequest.DocModel.Blob = await _fileService.DownloadAsync(eachRequest.DocModel.FileName);
+            }
+        }
+
         return Ok(result);
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetRequest(int id)
     {
         try
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            //var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var userId = 1;
             var result = await _requestData.GetRequest(id);
+            result.DocModel = await _documentData.GetDocument(result.DocumentId);
+            //result.DocModel.Blob = await _fileService.DownloadAsync(result.DocModel.FileName);
+
             if (result is not null)
             {
-                if (int.Parse(userId!) == result.UserId)
+                if (userId == result.UserId)
                 {
                     return Ok(result);
                 }
