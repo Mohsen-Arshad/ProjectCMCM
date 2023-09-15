@@ -18,7 +18,6 @@ public class CategoriesController : ControllerBase
 
     #region GET
     [HttpGet]
-    [AllowAnonymous]
     public async Task<IActionResult> GetAllCategories()
     {
         var result = await _categoryData.GetAllCategroies();

@@ -46,7 +46,6 @@ public class RequestsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [AllowAnonymous]
     public async Task<IActionResult> GetRequest(int id)
     {
         try

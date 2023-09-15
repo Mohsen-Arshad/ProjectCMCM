@@ -23,14 +23,32 @@ public class UsersController : ControllerBase
         _userData = userData;
     }
 
-    //#region GET
-    //[HttpGet("{id}")]
-    ////[ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any, NoStore = false)]   ------ this line is for caching
-    //public IActionResult GetUser()
-    //{
-    //    return Ok();
-    //}
-    //#endregion
+    #region GET
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUserInfo(int id)
+    {
+        var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+        try
+        {
+            if (userId != null)
+            {
+                if (int.Parse(userId) != id)
+                {
+                    return BadRequest("You are not allowed to delete somebodies else's account");
+                }
+                var result = await _userData.GetUserInfo(int.Parse(userId));
+                return Ok(result);
+            }
+            return NotFound("User not found");
+        }
+        catch (Exception)
+        {
+            return BadRequest();
+        }
+    }
+    #endregion
+
 
     #region POST LOGIN REGISTER
     [HttpPost("[action]")]
@@ -94,9 +112,8 @@ public class UsersController : ControllerBase
     #endregion
 
     #region DELETE
-    [HttpDelete]
-    [AllowAnonymous]
-    public async Task<IActionResult> Delete()
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
     {
         var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
@@ -104,6 +121,10 @@ public class UsersController : ControllerBase
         {
             if (userId != null)
             {
+                if (int.Parse(userId) != id)
+                {
+                    return BadRequest("You are not allowed to delete somebodies else's account");
+                }
                 await _userData.DeleteUser(int.Parse(userId));
                 return Ok("User successfully deleted!");
             }
@@ -130,7 +151,7 @@ public class UsersController : ControllerBase
             _config.GetValue<string>("Authentication:Audience"),
             claims,
             DateTime.UtcNow,
-            DateTime.UtcNow.AddMinutes(2),
+            DateTime.UtcNow.AddMinutes(50),
             signingCredentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

@@ -12,6 +12,17 @@ public class UserData : IUserData
         _sql = sql;
     }
 
+    //dbo.spGetUser -- Get User Info
+    public async Task<UserModel> GetUserInfo(int id)
+    {
+        var result = await _sql.LoadData<UserModel, dynamic>(
+            "dbo.spGetUserInfo",
+            new { Id = id },
+            "Default");
+
+        return result.FirstOrDefault();
+    }
+
     //dbo.spGetUser -- Login
     public async Task<UserModel> GetUser(string emailAddress, string password)
     {
@@ -32,7 +43,7 @@ public class UserData : IUserData
         string emailAddress,
         string password)
     {
-        var result = await _sql.LoadData<UserModel ,dynamic>(
+        var result = await _sql.LoadData<UserModel, dynamic>(
             "dbo.spPostUser",
             new
             {
