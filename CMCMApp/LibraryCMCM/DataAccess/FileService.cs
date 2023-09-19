@@ -17,9 +17,6 @@ public class FileService : IFileService
     {
         _config = config;
 
-        //string storageAccount = "cmcmstorage";
-        //string storageKey = "+lPSqADC3CgECy59+MXtZUvZr+6wha6nbOnfftQ7w+wKbdWJfP+MG5Mb9oOSseRxpymGMg5EN9F3+AStTt1lBg==";
-
         var credential = new StorageSharedKeyCredential(_config.GetValue<string>("FileService:StorageAccount"), _config.GetValue<string>("FileService:Key"));
         var blobUri = $"https://{_config.GetValue<string>("FileService:StorageAccount")}.blob.core.windows.net/invoicesfiles/";
         var blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);

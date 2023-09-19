@@ -49,7 +49,6 @@ public class UsersController : ControllerBase
     }
     #endregion
 
-
     #region POST LOGIN REGISTER
     [HttpPost("[action]")]
     [AllowAnonymous]
@@ -151,7 +150,7 @@ public class UsersController : ControllerBase
             _config.GetValue<string>("Authentication:Audience"),
             claims,
             DateTime.UtcNow,
-            DateTime.UtcNow.AddMinutes(50),
+            DateTime.UtcNow.AddDays(365),
             signingCredentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
